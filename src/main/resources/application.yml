@@ -1,0 +1,47 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: fraud-detection-system
+
+  kafka:
+    # 'localhost:9092' connects from your Ubuntu host to the Docker broker
+    # 'broker:29092' would be used if the App itself was in Docker
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: true
+
+    streams:
+      application-id: ${spring.application.name}-streams
+      properties:
+        # Essential for exactly_once_v2 to work with your single-node broker
+        processing.guarantee: exactly_once_v2
+        auto.offset.reset: earliest
+        default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+        default.value.serde: org.springframework.kafka.support.serializer.JsonSerde
+        # Ensure this matches your package structure
+        spring.json.value.default.type: com.raaz.fraud_detection_system.domain.Transaction
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+# Senior Tip: Customizing the paths and ensuring Swagger is active
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+
+# Monitoring the stream logs in your console
+logging:
+  level:
+    root: INFO
+    com.raaz.fraud_detection_system: DEBUG
+    org.apache.kafka: WARN
