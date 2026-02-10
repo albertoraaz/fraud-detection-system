@@ -60,7 +60,7 @@ To launch the detection system on your local machine:
 
 ---
 
-## 📊 Monitoring & API Verification
+## 📊 Monitoring, API Verification & Observability
 
 The system is instrumented for instant verification through the following endpoints:
 
@@ -69,6 +69,20 @@ The system is instrumented for instant verification through the following endpoi
 | **Swagger UI** | [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) | Interactive API Playground |
 | **OpenAPI Docs** | [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs) | Raw JSON Documentation |
 | **Kafka Broker** | `localhost:9092` | External Bootstrap Server |
+
+Monitoring: Spring Boot Actuator
+This project implements **Spring Boot Actuator** to provide deep visibility into the system's operational health and the state of our resiliency patterns.
+
+
+**Key Features:**
+* **Health Endpoint:** Exposed at `/actuator/health` to provide real-time status of the application, disk space, and Kafka connectivity.
+* **Circuit Breaker Metrics:** The health check specifically includes the `circuitBreakers` component, showing whether the state is `CLOSED`, `OPEN`, or `HALF_OPEN`.
+* **Detailed Analytics:** Tracks `bufferedCalls`, `failedCalls`, and `notPermittedCalls` (requests blocked by the open circuit).
+
+**How to verify:**
+1. Stop the Kafka broker: `docker-compose stop broker`.
+2. Send transactions via Swagger UI.
+3. Check `http://localhost:8080/actuator/health` to see the state transition to `CIRCUIT_OPEN`.
 
 ---
 
