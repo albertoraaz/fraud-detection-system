@@ -59,7 +59,6 @@ This engine is engineered for banking-grade consistency and observability:
 * **Secrets Management**: Credentials and Client Secrets are managed via environment variables and excluded from version control using a template-based configuration (`application.yml.example`).
 
 ---
----
 
 ## 📊 Monitoring, API Verification & Observability
 
