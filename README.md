@@ -59,43 +59,6 @@ This engine is engineered for banking-grade consistency and observability:
 * **Secrets Management**: Credentials and Client Secrets are managed via environment variables and excluded from version control using a template-based configuration (`application.yml.example`).
 
 ---
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-* **Java 21** (LTS)
-* **Maven 3.9+**
-* **Docker & Docker Compose**
-
-## 🛠️ Configuration & Setup
-
-This project follows best practices by using a template-based configuration system. This ensures that local environment settings and potential secrets remain outside of version control.
-
-### Local Environment Setup
-To get the application running on your local machine, follow these steps:
-
-1. **Create your local configuration file** Copy the example template to create your actual `application.yml` file:
-   ```bash
-   cp src/main/resources/application.yml.example src/main/resources/application.yml
-
-### The Execution Workflow
-
-To launch the detection system on your local machine:
-
-1.  **Start the Infrastructure**:
-    ```bash
-    docker-compose up -d
-    ```
-2.  **Compile & Package**:
-    ```bash
-    mvn clean package -DskipTests
-    ```
-3.  **Run the Application**:
-    ```bash
-    mvn spring-boot:run
-    ```
-
 ---
 
 ## 📊 Monitoring, API Verification & Observability
@@ -143,8 +106,45 @@ To verify that the Fraud Detection engine is correctly filtering high-value even
 ### 3. Validating Exactly-Once Semantics (EOS)
 Because the system is configured with `exactly_once_v2`, the **Kafka Transaction Manager** ensures that no partial or duplicate fraud alerts are committed to the `fraud-alerts` topic, even during unexpected service restarts.
 
-
 ---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+* **Java 21** (LTS)
+* **Maven 3.9+**
+* **Docker & Docker Compose**
+
+## 🛠️ Configuration & Setup
+
+This project follows best practices by using a template-based configuration system. This ensures that local environment settings and potential secrets remain outside of version control.
+
+### Local Environment Setup
+To get the application running on your local machine, follow these steps:
+
+1. **Create your local configuration file** Copy the example template to create your actual `application.yml` file:
+   ```bash
+   cp src/main/resources/application.yml.example src/main/resources/application.yml
+
+### The Execution Workflow
+
+To launch the detection system on your local machine:
+
+1.  **Start the Infrastructure**:
+    ```bash
+    docker-compose up -d
+    ```
+2.  **Compile & Package**:
+    ```bash
+    mvn clean package -DskipTests
+    ```
+3.  **Run the Application**:
+    ```bash
+    mvn spring-boot:run
+    ```
+
+
 
 ## 👤 Author
 **Alberto Raaz** *February, 2026*
