@@ -7,6 +7,15 @@
 
 A production-ready event-driven system built with **Spring Boot 3.5** and **Kafka Streams**. This project demonstrates a high-throughput architecture for financial safety, focusing on **Exactly-Once Semantics (EOS)**, real-time transaction filtering, and automated documentation via OpenAPI 3.
 
+## 🚀 Key Features
+
+- **Real-time Ingestion:** REST API for high-throughput transaction simulation.
+- **Distributed Streaming:** Leverages Kafka for asynchronous message processing.
+- **Fault Tolerance:** Implements Circuit Breaker and Retry patterns.
+- **Security-First Architecture:** Automated vulnerability scanning and secret management (DevSecOps).
+- **Observability:** Health monitoring and metrics exposure via Spring Boot Actuator.
+- **API Documentation:** Interactive documentation via Swagger/OpenAPI.
+
 ---
 
 ## 🏛️ System Architecture
@@ -30,6 +39,24 @@ This engine is engineered for banking-grade consistency and observability:
 * **Automatic Topic Management**: Uses Spring's `TopicBuilder` to programmatically provision the `transactions` and `fraud-alerts` topics.
 * **Interactive API Documentation**: Fully integrated with **Swagger UI (SpringDoc)**, allowing developers to trigger and monitor transaction simulations visually.
 * **Type-Safe Serialization**: Implements custom `JsonSerde` for seamless Java-to-JSON transitions within the Kafka pipeline.
+
+---
+
+## 🏗️ Technical Hardening: Resiliency & Security
+
+### 1. Failure Isolation & Resiliency
+* **Circuit Breakers**: Implemented via **Resilience4j** to prevent cascading failures. If the Kafka broker or downstream services are slow, the application "fails fast" to remain responsive.
+* **Graceful Degradation**: Configured retries with exponential backoff for transient network issues.
+
+### 2. Zero-Trust Security
+* **Identity Management**: Uses **Keycloak (OAuth2/JWT)** for all REST endpoints. No request is trusted without a valid, signed token.
+* **Static Analysis**: Integrated with **GitHub CodeQL** and **Snyk** to scan for vulnerabilities (SAST) and insecure dependencies (SCA).
+* **Container Scanning**: Infrastructure images (Kafka, Zookeeper) are verified using **Trivy** to ensure no OS-level vulnerabilities exist.
+
+### 3. Data Integrity & Statelessness
+* **Stateless Design**: The service is strictly stateless, allowing for horizontal scaling across multiple pods without session stickiness issues.
+* **Encryption**: Supports encryption in transit (TLS) for Kafka communication and secure handling of sensitive transaction payloads.
+* **Secrets Management**: Credentials and Client Secrets are managed via environment variables and excluded from version control using a template-based configuration (`application.yml.example`).
 
 ---
 
