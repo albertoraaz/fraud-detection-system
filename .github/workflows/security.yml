@@ -1,0 +1,45 @@
+name: Security Scanning
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  snyk-scan:
+    name: Dependency Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Snyk Open Source Scan
+        uses: snyk/actions/maven@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          # We use --severity-threshold=high to ensure the build only 
+          # fails on critical vulnerabilities like Log4j-style issues.
+          args: --severity-threshold=high
+  trivy-scan:
+    name: Container OS Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Scan Kafka Image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'confluentinc/cp-kafka:latest'
+          format: 'table'
+          exit-code: '1' # Fails the build if vulnerabilities are found
+          severity: 'CRITICAL,HIGH'
