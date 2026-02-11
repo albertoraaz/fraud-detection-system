@@ -3,6 +3,7 @@ package com.raaz.fraud_detection_system.controller;
 import com.raaz.fraud_detection_system.domain.Transaction;
 import com.raaz.fraud_detection_system.service.KafkaProducerService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,6 +31,7 @@ public class TransactionController {
     private final KafkaProducerService producerService;
 
     @PostMapping
+    @RateLimiter(name = "transactionRateLimiter")
     @Operation(summary = "Generate simulated transactions", description = "Injects 50 random transactions into the 'transactions' topic")
     public String sendTransactions() {
         int successCount = 0;

@@ -78,3 +78,9 @@ resilience4j:
           - java.util.concurrent.ExecutionException
           - java.lang.RuntimeException
           - java.lang.Exception
+  ratelimiter:
+    instances:
+      transactionRateLimiter:
+        limitForPeriod: 10 # Only 10 requests...
+        limitRefreshPeriod: 1s # ...every 1 second
+        timeoutDuration: 0s # Reject immediately if limit is reached
