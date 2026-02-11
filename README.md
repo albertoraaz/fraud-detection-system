@@ -41,25 +41,43 @@ This engine is engineered for banking-grade consistency and observability:
 * **Type-Safe Serialization**: Implements custom `JsonSerde` for seamless Java-to-JSON transitions within the Kafka pipeline.
 
 ---
-
 ## 🏗️ Technical Hardening: Resiliency & Security
 
+This project follows standard hardening (**OWASP**, **NIST**) to ensure data protection, failure isolation, and infrastructure integrity through a **Zero-Trust** approach.
+
+| Feature | Implementation Status | Tools / Technology |
+| :--- | :--- | :--- |
+| **Resiliency** | Failure Isolation & Retries | **Resilience4j** |
+| **Security Scanning** | Automated Vulnerability Audits | **GitHub Actions, Snyk, Trivy** |
+| **Static Analysis** | SAST for Logic Flaws | **GitHub CodeQL** |
+| **API Protection** | Hardening & Rate Limiting | **Spring Security, Rate Limiter** |
+| **Authentication** | Identity Management (IdP) | **OAuth2, JWT, Keycloak (Local)** |
+| **Secret Management** | Zero-Leak Policy | GitHub Secrets, `.gitignore` |
+
 ### 1. Failure Isolation & Resiliency
-* **Circuit Breakers**: Implemented via **Resilience4j** to prevent cascading failures. If the Kafka broker or downstream services are slow, the application "fails fast" to remain responsive.
-* **Graceful Degradation**: Configured retries with exponential backoff for transient network issues.
+* **Circuit Breakers**: Implemented via **Resilience4j** to prevent cascading failures. If the Kafka broker or downstream services are slow, the application "fails fast" to remain responsive and protect system resources.
+* **Graceful Degradation**: Configured retries with exponential backoff for transient network issues, ensuring data delivery without overwhelming the infrastructure.
 
-### 2. Zero-Trust Security
-* **Identity Management**: Uses **Keycloak (OAuth2/JWT)** for all REST endpoints. No request is trusted without a valid, signed token.
-* **Static Analysis**: Integrated with **GitHub CodeQL** and **Snyk** to scan for vulnerabilities (SAST) and insecure dependencies (SCA).
-* **Container Scanning**: Infrastructure images (Kafka, Zookeeper) are verified using **Trivy** to ensure no OS-level vulnerabilities exist.
+### 2. Zero-Trust Identity & Access Management
+* **Keycloak Implementation**: A local **Keycloak** instance acts as the Identity Provider (IdP). No request is trusted without a valid, signed **JWT** via the **OAuth2** protocol.
+* **Rate Limiting**: Protects the ingestion API from DDoS and brute-force attacks by limiting the number of requests per second per client, ensuring fair resource distribution.
 
-### 3. Data Integrity & Statelessness
+### 3. Automated DevSecOps & Scanning
+Every push and Pull Request triggers a CI/CD pipeline via **GitHub Actions** that automates:
+* **Dependency Scanning (Snyk)**: Detects and alerts on vulnerabilities (**SCA**) within the Maven dependency tree.
+* **Container Scanning (Trivy)**: Audits Docker images (Kafka, Zookeeper, and the App) for OS-level vulnerabilities.
+* **CodeQL (SAST)**: Performs semantic analysis of the source code to find security flaws like SQL injection or insecure cryptography.
+
+### 4. Data Integrity & Statelessness
 * **Stateless Design**: The service is strictly stateless, allowing for horizontal scaling across multiple pods without session stickiness issues.
-* **Encryption**: Supports encryption in transit (TLS) for Kafka communication and secure handling of sensitive transaction payloads.
-* **Secrets Management**: Credentials and Client Secrets are managed via environment variables and excluded from version control using a template-based configuration (`application.yml.example`).
+* **Encryption**: Supports encryption in transit (**TLS**) for Kafka communication and secure handling of sensitive transaction payloads.
+* **Secrets Management**: Credentials and Client Secrets are managed via environment variables and **GitHub Secrets**. A template-based configuration (`application.yml.example`) is used to ensure no sensitive data is ever committed to version control.
 
 ---
+<<<<<<< HEAD
 
+=======
+>>>>>>> 95d07d0 (readme.md updated)
 ## 📊 Monitoring, API Verification & Observability
 
 The system is instrumented for instant verification through the following endpoints:
