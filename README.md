@@ -41,6 +41,17 @@ This engine is engineered for banking-grade consistency and observability:
 * **Maven 3.9+**
 * **Docker & Docker Compose**
 
+## 🛠️ Configuration & Setup
+
+This project follows best practices by using a template-based configuration system. This ensures that local environment settings and potential secrets remain outside of version control.
+
+### Local Environment Setup
+To get the application running on your local machine, follow these steps:
+
+1. **Create your local configuration file** Copy the example template to create your actual `application.yml` file:
+   ```bash
+   cp src/main/resources/application.yml.example src/main/resources/application.yml
+
 ### The Execution Workflow
 
 To launch the detection system on your local machine:
