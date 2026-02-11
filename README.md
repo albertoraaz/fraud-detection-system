@@ -74,10 +74,6 @@ Every push and Pull Request triggers a CI/CD pipeline via **GitHub Actions** tha
 * **Secrets Management**: Credentials and Client Secrets are managed via environment variables and **GitHub Secrets**. A template-based configuration (`application.yml.example`) is used to ensure no sensitive data is ever committed to version control.
 
 ---
-<<<<<<< HEAD
-
-=======
->>>>>>> 95d07d0 (readme.md updated)
 ## 📊 Monitoring, API Verification & Observability
 
 The system is instrumented for instant verification through the following endpoints:
