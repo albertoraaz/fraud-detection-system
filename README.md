@@ -12,7 +12,9 @@ A production-ready event-driven system built with **Spring Boot 3.5** and **Kafk
 - **Real-time Ingestion:** REST API for high-throughput transaction simulation.
 - **Distributed Streaming:** Leverages Kafka for asynchronous message processing.
 - **Fault Tolerance:** Implements Circuit Breaker and Retry patterns.
-- **Security-First Architecture:** Automated vulnerability scanning and secret management (DevSecOps).
+- **Automated CI/CD: Fully orchestrated lifecycle managed by Jenkins and GitHub Apps.
+- **Containerization: Multi-stage Docker builds for minimal, hardened production images.
+- **Automated Rollback: Smart deployment logic that reverts to the last stable version if a build or health check fails.
 - **Observability:** Health monitoring and metrics exposure via Spring Boot Actuator.
 - **API Documentation:** Interactive documentation via Swagger/OpenAPI.
 
@@ -27,6 +29,18 @@ The system utilizes a stateless stream-processing model to monitor incoming fina
 * **Transaction Producer**: A RESTful gateway that simulates high-frequency financial events, producing them into the Kafka cluster using `KafkaTemplate`.
 * **Fraud Detection Stream**: The core processing engine. It leverages the **Kafka Streams API** to process, filter, and analyze transaction payloads in real-time.
 * **Infrastructure Layer**: A containerized environment featuring **Confluent Kafka (7.1.0)** and **Zookeeper**, optimized for single-node development with transactional support.
+
+---
+
+## 🏗️ CI/CD Pipeline & DevOps Lifecycle
+This project utilizes a "Commit-to-Cloud" workflow. Every push to the repository triggers an automated pipeline:
+
+* **Secure Authentication: Jenkins connects to GitHub via GitHub App Credentials (using PKCS#8 RSA keys).
+* **Standardized Build: Compilation occurs in a controlled environment using Maven 3.9.6 and OpenJDK 21.
+* **Hardened Dockerization: * Build Stage: Uses maven:3.9.6-eclipse-temurin-21-alpine.
+* **Runtime Stage: Uses eclipse-temurin:21-jre-alpine with a non-root user for enhanced security.
+* **Automated Registry Push: Verified images are versioned and pushed to Docker Hub.
+* **Rollback Strategy: The pipeline includes a failure-handling block. If the deployment or integration tests fail, the system automatically triggers a rollback to the previous stable Docker image tag, ensuring zero-downtime and system reliability.
 
 ---
 
@@ -84,7 +98,6 @@ The system is instrumented for instant verification through the following endpoi
 Monitoring: Spring Boot Actuator
 This project implements **Spring Boot Actuator** to provide deep visibility into the system's operational health and the state of our resiliency patterns.
 
-
 **Key Features:**
 * **Health Endpoint:** Exposed at `/actuator/health` to provide real-time status of the application, disk space, and Kafka connectivity.
 * **Circuit Breaker Metrics:** The health check specifically includes the `circuitBreakers` component, showing whether the state is `CLOSED`, `OPEN`, or `HALF_OPEN`.
@@ -136,6 +149,20 @@ To get the application running on your local machine, follow these steps:
 1. **Create your local configuration file** Copy the example template to create your actual `application.yml` file:
    ```bash
    cp src/main/resources/application.yml.example src/main/resources/application.yml
+
+### ⚙️ Jenkins Environment Setup
+
+To replicate this pipeline, configure your Jenkins instance with:
+
+JDK Tool: Name: JAVA_21 | Path: /usr/lib/jvm/java-21-openjdk-amd64
+
+Maven Tool: Name: 3.9.6 | Version: 3.9.6
+
+Credentials:
+
+github-app-creds: GitHub App Private Key for secure repository access.
+
+dockerhub-credentials: Username/Password for image distribution.
 
 ### The Execution Workflow
 
