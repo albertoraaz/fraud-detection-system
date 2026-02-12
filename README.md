@@ -53,10 +53,11 @@ graph TD
     subgraph Security
         Logic -.-> KC[Keycloak / OAuth2]
     end
+   ```
 
 ### The Distributed System Diagram (Physical View)
-Physical View (Docker Network)
 
+```mermaid
 graph LR
 subgraph Docker_Network
 App[Spring Boot App]
@@ -69,8 +70,7 @@ end
     App <--> K
     K <--> Z
     App <--> KC
-   ```
-
+```
 
 ### Core Components
 
