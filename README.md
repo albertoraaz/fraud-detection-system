@@ -28,10 +28,13 @@ The system utilizes a stateless stream-processing model to monitor incoming fina
 
 Data Flow & CI/CD Lifecycle
 
+### System Architecture
+
+```mermaid
 graph TD
-subgraph External_Sources
-T[Transaction Source] --> K_In((Kafka Topic: transactions-input))
-end
+    subgraph External_Sources
+        T[Transaction Source] --> K_In((Kafka Topic: transactions-input))
+    end
 
     subgraph Spring_Boot_Application
         K_In --> KS[Kafka Streams Processor]
@@ -66,6 +69,7 @@ end
     App <--> K
     K <--> Z
     App <--> KC
+   ```
 
 
 ### Core Components
