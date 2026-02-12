@@ -52,7 +52,7 @@ graph TD
    ```
 
 ### 🌐 Distributed System Diagram: Physical & Infrastructure View
-This view focuses on the topology and the network isolation of your distributed components.
+This view focuses on the topology and the network isolation of the distributed components.
 
 ```mermaid
 graph LR
