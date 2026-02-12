@@ -32,5 +32,21 @@ pipeline {
                 sh 'docker build -t yourdockerhubuser/fraud-detection:latest .'
             }
         }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    try {
+                        // Attempt to deploy the new version
+                        sh "docker-compose up -d --build"
+                    } catch (Exception e) {
+                        echo "Deployment failed! Initiating Automated Rollback..."
+                        // Rollback: Pull and run the previous stable version
+                        sh "docker-compose undo" // Or specific docker run command for previous tag
+                        currentBuild.result = 'FAILURE'
+                    }
+                }
+            }
+        }
     }
 }
