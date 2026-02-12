@@ -12,9 +12,9 @@ A production-ready event-driven system built with **Spring Boot 3.5** and **Kafk
 - **Real-time Ingestion:** REST API for high-throughput transaction simulation.
 - **Distributed Streaming:** Leverages Kafka for asynchronous message processing.
 - **Fault Tolerance:** Implements Circuit Breaker and Retry patterns.
-- **Automated CI/CD: Fully orchestrated lifecycle managed by Jenkins and GitHub Apps.
-- **Containerization: Multi-stage Docker builds for minimal, hardened production images.
-- **Automated Rollback: Smart deployment logic that reverts to the last stable version if a build or health check fails.
+- **Automated CI/CD:** Fully orchestrated lifecycle managed by Jenkins and GitHub Apps.
+- **Containerization:** Multi-stage Docker builds for minimal, hardened production images.
+- **Automated Rollback:** Smart deployment logic that reverts to the last stable version if a build or health check fails.
 - **Observability:** Health monitoring and metrics exposure via Spring Boot Actuator.
 - **API Documentation:** Interactive documentation via Swagger/OpenAPI.
 
@@ -35,12 +35,12 @@ The system utilizes a stateless stream-processing model to monitor incoming fina
 ## 🏗️ CI/CD Pipeline & DevOps Lifecycle
 This project utilizes a "Commit-to-Cloud" workflow. Every push to the repository triggers an automated pipeline:
 
-* **Secure Authentication: Jenkins connects to GitHub via GitHub App Credentials (using PKCS#8 RSA keys).
-* **Standardized Build: Compilation occurs in a controlled environment using Maven 3.9.6 and OpenJDK 21.
-* **Hardened Dockerization: * Build Stage: Uses maven:3.9.6-eclipse-temurin-21-alpine.
-* **Runtime Stage: Uses eclipse-temurin:21-jre-alpine with a non-root user for enhanced security.
-* **Automated Registry Push: Verified images are versioned and pushed to Docker Hub.
-* **Rollback Strategy: The pipeline includes a failure-handling block. If the deployment or integration tests fail, the system automatically triggers a rollback to the previous stable Docker image tag, ensuring zero-downtime and system reliability.
+* **Secure Authentication:** Jenkins connects to GitHub via GitHub App Credentials (using PKCS#8 RSA keys).
+* **Standardized Build:** Compilation occurs in a controlled environment using Maven 3.9.6 and OpenJDK 21.
+* **Hardened Dockerization:** * Build Stage: Uses maven:3.9.6-eclipse-temurin-21-alpine.
+* **Runtime Stage:** Uses eclipse-temurin:21-jre-alpine with a non-root user for enhanced security.
+* **Automated Registry Push:** Verified images are versioned and pushed to Docker Hub.
+* **Rollback Strategy:** The pipeline includes a failure-handling block. If the deployment or integration tests fail, the system automatically triggers a rollback to the previous stable Docker image tag, ensuring zero-downtime and system reliability.
 
 ---
 
