@@ -1,6 +1,12 @@
 pipeline {
     agent any
 
+    tools {
+            // This MUST match the name you gave in Step 2
+            jdk 'JAVA_21'
+            maven '3.9.6' // Ensure you have a Maven tool configured as well
+        }
+
     stages {
         stage('Checkout') {
             steps {
