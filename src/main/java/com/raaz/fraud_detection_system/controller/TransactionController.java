@@ -2,15 +2,10 @@ package com.raaz.fraud_detection_system.controller;
 
 import com.raaz.fraud_detection_system.domain.Transaction;
 import com.raaz.fraud_detection_system.service.KafkaProducerService;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
-import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +21,6 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 public class TransactionController {
 
-    // Senior Tip: Use the POJO directly in the template
     private final KafkaTemplate<String, Transaction> kafkaTemplate;
     private final KafkaProducerService producerService;
 
@@ -50,13 +44,10 @@ public class TransactionController {
                 successCount++;
             } catch (Exception e) {
                 failureCount++;
-                // LOG IT, but DO NOT THROW.
-                // This lets the loop continue so the Circuit Breaker counts the hits.
-                log.error("Iteration {} failed: {}", i, e.getMessage());
             }
 
         }
-        return "50 Transactions Sent to Kafka";
+        return String.format("Results - Success: %d, Failures: %d", successCount, failureCount);
     }
 
     /**
