@@ -24,6 +24,48 @@ A production-ready event-driven system built with **Spring Boot 3.5** and **Kafk
 
 The system utilizes a stateless stream-processing model to monitor incoming financial transactions and identify suspicious activity with sub-millisecond latency.
 
+### The Architecture Diagram
+
+graph TD
+subgraph External_Sources
+T[Transaction Source] --> K_In((Kafka Topic: transactions-input))
+end
+
+    subgraph Spring_Boot_Application
+        K_In --> KS[Kafka Streams Processor]
+        KS --> State[(RocksDB Local State)]
+        KS --> Logic{Fraud Logic / Resilience4j}
+        Logic -->|Legit| K_Out((Kafka Topic: processed))
+        Logic -->|Fraud| K_Alert((Kafka Topic: fraud-alerts))
+    end
+
+    subgraph CI_CD_Infrastructure
+        GH[GitHub Repo] -->|Webhook| J[Jenkins Server]
+        J -->|Build| D[Docker Hub]
+        D -->|Pull| PROD[Ubuntu Deployment]
+    end
+
+    subgraph Security
+        Logic -.-> KC[Keycloak / OAuth2]
+    end
+
+
+### The Distributed System Diagram (Physical View)
+
+graph LR
+subgraph Docker_Network
+App[Spring Boot App]
+K[Kafka Broker]
+Z[Zookeeper]
+KC[Keycloak]
+end
+
+    User((User/Driver)) -->|REST/HTTPS| App
+    App <--> K
+    K <--> Z
+    App <--> KC
+
+
 ### Core Components
 
 * **Transaction Producer**: A RESTful gateway that simulates high-frequency financial events, producing them into the Kafka cluster using `KafkaTemplate`.
