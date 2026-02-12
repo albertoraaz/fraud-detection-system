@@ -20,56 +20,66 @@ A production-ready event-driven system built with **Spring Boot 3.5** and **Kafk
 
 ---
 
-## 🏛️ System Architecture
-
-The system utilizes a stateless stream-processing model to monitor incoming financial transactions and identify suspicious activity with sub-millisecond latency.
-
-### The Architecture Diagram
-
-Data Flow & CI/CD Lifecycle
-
-### System Architecture
+### 🏛️ The Architecture Diagram: Full Lifecycle & Data Flow
+This diagram demonstrates the end-to-end "Commit-to-Cloud" flow, including the internal state management of the Kafka Streams processor.
 
 ```mermaid
 graph TD
-    subgraph External_Sources
-        T[Transaction Source] --> K_In((Kafka Topic: transactions-input))
+    subgraph Data_Ingestion [Data Ingestion & Event Streaming]
+        API[REST Transaction API] -->|JSON/Protobuf| K_In((Kafka: transactions-input))
+        K_In -->|Event Stream| KS[Kafka Streams Engine]
     end
 
-    subgraph Spring_Boot_Application
-        K_In --> KS[Kafka Streams Processor]
-        KS --> State[(RocksDB Local State)]
-        KS --> Logic{Fraud Logic / Resilience4j}
-        Logic -->|Legit| K_Out((Kafka Topic: processed))
-        Logic -->|Fraud| K_Alert((Kafka Topic: fraud-alerts))
+    subgraph Processing_Layer [Stateful Processing & Logic]
+        KS -->|RocksDB| State[(Local State Store)]
+        KS -->|Apply Rules| Logic{Fraud Detection Logic}
+        Logic -->|Circuit Breaker| R4J[Resilience4j]
+        R4J -->|Verified| K_Out((Kafka: transactions-legit))
+        R4J -->|Flagged| K_Alert((Kafka: fraud-alerts))
     end
 
-    subgraph CI_CD_Infrastructure
-        GH[GitHub Repo] -->|Webhook| J[Jenkins Server]
-        J -->|Build| D[Docker Hub]
-        D -->|Pull| PROD[Ubuntu Deployment]
+    subgraph DevOps_Automation [CI/CD & Infrastructure Control]
+        GH[GitHub Main] -->|Webhook| Jenk[Jenkins Pipeline]
+        Jenk -->|Maven Build| Test{JUnit/Integration Tests}
+        Test -->|Pass| DH[Docker Hub Registry]
+        DH -->|Pull Image| Prod[Ubuntu Production Node]
     end
 
-    subgraph Security
-        Logic -.-> KC[Keycloak / OAuth2]
+    subgraph Security_Identity [Cross-Cutting Concerns]
+        Logic -.->|JWT Validation| KC[Keycloak Auth]
+        Jenk -.->|Secret Management| GH_Sec[GitHub Secrets/Vault]
     end
    ```
 
-### The Distributed System Diagram (Physical View)
+### 🌐 Distributed System Diagram: Physical & Infrastructure View
+This view focuses on the topology and the network isolation of your distributed components.
 
 ```mermaid
 graph LR
-subgraph Docker_Network
-App[Spring Boot App]
-K[Kafka Broker]
-Z[Zookeeper]
-KC[Keycloak]
-end
+    subgraph Public_Internet
+        Client((Driver App / Client))
+    end
 
-    User((User/Driver)) -->|REST/HTTPS| App
-    App <--> K
-    K <--> Z
-    App <--> KC
+    subgraph VPC_Private_Network [Private Virtual Network]
+        subgraph App_Cluster [Service Tier]
+            App[Spring Boot App Instance]
+            Actuator[Actuator / Metrics]
+        end
+
+        subgraph Middleware_Cluster [Event Backbone]
+            K1[Kafka Broker] <--> Z[Zookeeper Quorum]
+            K1 <--> Storage[(Persistent Volume)]
+        end
+
+        subgraph Identity_Tier [IAM]
+            KC[Keycloak Server]
+        end
+    end
+
+    Client -->|HTTPS/TLS| App
+    App <-->|Internal Protocol| K1
+    App <-->|OIDC| KC
+    Jenk[Jenkins Agent] -.->|SSH/Docker Socket| App
 ```
 
 ### Core Components
