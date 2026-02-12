@@ -25,29 +25,29 @@ This diagram demonstrates the end-to-end "Commit-to-Cloud" flow, including the i
 
 ```mermaid
 graph TD
-    subgraph Data_Ingestion [Data Ingestion & Event Streaming]
-        API[REST Transaction API] -->|JSON/Protobuf| K_In((Kafka: transactions-input))
+    subgraph Ingestion_Layer [Banking Ingestion Layer]
+        PGW[Payment Gateway / ATM] -->|ISO-20022 / JSON| K_In((Kafka: transactions-input))
         K_In -->|Event Stream| KS[Kafka Streams Engine]
     end
 
-    subgraph Processing_Layer [Stateful Processing & Logic]
-        KS -->|RocksDB| State[(Local State Store)]
-        KS -->|Apply Rules| Logic{Fraud Detection Logic}
+    subgraph Analysis_Layer [Stateful Fraud Analysis]
+        KS -->|RocksDB| State[(Transaction History Store)]
+        KS -->|Apply Rules| Logic{Fraud Scoring Engine}
         Logic -->|Circuit Breaker| R4J[Resilience4j]
         R4J -->|Verified| K_Out((Kafka: transactions-legit))
         R4J -->|Flagged| K_Alert((Kafka: fraud-alerts))
     end
 
-    subgraph DevOps_Automation [CI/CD & Infrastructure Control]
-        GH[GitHub Main] -->|Webhook| Jenk[Jenkins Pipeline]
-        Jenk -->|Maven Build| Test{JUnit/Integration Tests}
-        Test -->|Pass| DH[Docker Hub Registry]
-        DH -->|Pull Image| Prod[Ubuntu Production Node]
+    subgraph Infrastructure_Automation [CI/CD & Deployment]
+        GH[GitHub Repo] -->|Webhook| Jenk[Jenkins Pipeline]
+        Jenk -->|Maven Build| Test{Unit & Integration Tests}
+        Test -->|Success| DH[Docker Hub]
+        DH -->|Pull| Prod[Ubuntu Production Server]
     end
 
-    subgraph Security_Identity [Cross-Cutting Concerns]
-        Logic -.->|JWT Validation| KC[Keycloak Auth]
-        Jenk -.->|Secret Management| GH_Sec[GitHub Secrets/Vault]
+    subgraph Core_Banking_Services [Internal Banking Services]
+        Logic -.->|OAuth2/OIDC| KC[Keycloak Identity Provider]
+        Jenk -.->|Secret Management| GH_Sec[Vault / GitHub Secrets]
     end
    ```
 
@@ -56,30 +56,30 @@ This view focuses on the topology and the network isolation of the distributed c
 
 ```mermaid
 graph LR
-    subgraph Public_Internet
-        Client((Driver App / Client))
+    subgraph External_Network [External Banking Network]
+        GW((Financial Gateway))
     end
 
-    subgraph VPC_Private_Network [Private Virtual Network]
-        subgraph App_Cluster [Service Tier]
-            App[Spring Boot App Instance]
-            Actuator[Actuator / Metrics]
+    subgraph Internal_VPC [Secure Banking VPC]
+        subgraph Service_Tier [Application Layer]
+            App[Spring Boot Fraud App]
+            Actuator[Health & Metrics]
         end
 
-        subgraph Middleware_Cluster [Event Backbone]
-            K1[Kafka Broker] <--> Z[Zookeeper Quorum]
-            K1 <--> Storage[(Persistent Volume)]
+        subgraph Middleware_Tier [Message Backbone]
+            K1[Kafka Cluster] <--> Z[Zookeeper Quorum]
+            K1 <--> Storage[(Encrypted Persistent Volumes)]
         end
 
-        subgraph Identity_Tier [IAM]
-            KC[Keycloak Server]
+        subgraph Security_Tier [IAM & Security]
+            KC[Identity Server]
         end
     end
 
-    Client -->|HTTPS/TLS| App
+    GW -->|mTLS / HTTPS| App
     App <-->|Internal Protocol| K1
     App <-->|OIDC| KC
-    Jenk[Jenkins Agent] -.->|SSH/Docker Socket| App
+    Jenk[Jenkins Master] -.->|SSH| App
 ```
 
 ### Core Components
