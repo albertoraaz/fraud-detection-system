@@ -147,11 +147,11 @@ Every push and Pull Request triggers a CI/CD pipeline via **GitHub Actions** tha
 
 The system is instrumented for instant verification through the following endpoints:
 
-| Interface | URL | Description |
-| :--- | :--- | :--- |
-| **Swagger UI** | [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) | Interactive API Playground |
-| **OpenAPI Docs** | [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs) | Raw JSON Documentation |
-| **Kafka Broker** | `localhost:9092` | External Bootstrap Server |
+| Interface | URL                                                                            | Description |
+| :--- |:-------------------------------------------------------------------------------| :--- |
+| **Swagger UI** | [http://localhost:8081/swagger-ui.html](http://localhost:8081/swagger-ui.html) | Interactive API Playground |
+| **OpenAPI Docs** | [http://localhost:8081/v3/api-docs](http://localhost:8081/v3/api-docs)         | Raw JSON Documentation |
+| **Kafka Broker** | `localhost:9092`                                                               | External Bootstrap Server |
 
 Monitoring: Spring Boot Actuator
 This project implements **Spring Boot Actuator** to provide deep visibility into the system's operational health and the state of our resiliency patterns.
@@ -164,7 +164,7 @@ This project implements **Spring Boot Actuator** to provide deep visibility into
 **How to verify:**
 1. Stop the Kafka broker: `docker-compose stop broker`.
 2. Send transactions via Swagger UI.
-3. Check `http://localhost:8080/actuator/health` to see the state transition to `CIRCUIT_OPEN`.
+3. Check `http://localhost:8081/actuator/health` to see the state transition to `CIRCUIT_OPEN`.
 
 ---
 
@@ -174,7 +174,7 @@ The system provides an interactive simulation interface via Swagger UI, allowing
 
 
 ### 1. Triggering Transactions
-1. Access the **Swagger UI** at `http://localhost:8080/swagger-ui.html`.
+1. Access the **Swagger UI** at `http://localhost:8081/swagger-ui.html`.
 2. Locate the `Transactions` section and the `POST /api/transactions` endpoint.
 3. Click **"Try it out"** and then **"Execute"**.
 4. The system will automatically generate **50 simulated transactions** with randomized IDs and amounts.
@@ -182,7 +182,7 @@ The system provides an interactive simulation interface via Swagger UI, allowing
 ### 2. Verifying the Logic
 To verify that the Fraud Detection engine is correctly filtering high-value events:
 * **Terminal Logs**: Monitor the application console. You will see `DEBUG` logs for every incoming transaction and `WARN` alerts for those flagged as suspicious (e.g., > $10,000).
-* **Kafka UI**: If configured, visit `http://localhost:8080` to view the raw JSON payloads in the `fraud-alerts` topic.
+* **Kafka UI**: If configured, visit `http://localhost:8081` to view the raw JSON payloads in the `fraud-alerts` topic.
 
 ### 3. Validating Exactly-Once Semantics (EOS)
 Because the system is configured with `exactly_once_v2`, the **Kafka Transaction Manager** ensures that no partial or duplicate fraud alerts are committed to the `fraud-alerts` topic, even during unexpected service restarts.
