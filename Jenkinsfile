@@ -2,37 +2,35 @@ pipeline {
     agent any
 
     tools {
-            // This MUST match the name you gave in Step 2
-            jdk 'JAVA_21'
-            maven '3.9.6' // Ensure you have a Maven tool configured as well
-        }
+        jdk 'JAVA_21'
+        maven '3.9.6'
+    }
 
     stages {
         stage('Checkout') {
             steps {
-                // This uses the GitHub App connection to pull the code
                 checkout scm
             }
         }
 
-        stage('Build with Maven') {
+        stage('Build & Package') {
             steps {
-                // Compiles your Java code and runs tests
-                sh 'mvn clean package -DskipTests'
+                script {
+                    // 1. Get the path Jenkins assigned to the JAVA_21 tool
+                    def jdkPath = tool name: 'JAVA_21', type: 'jdk'
+
+                    // 2. Execute Maven while explicitly setting the JAVA_HOME for this process
+                    sh "export JAVA_HOME=${jdkPath} && ${tool name: '3.9.6', type: 'maven'}/bin/mvn clean package -DskipTests"
+                }
             }
         }
 
         stage('Docker Build') {
             steps {
-                // Creates the image using the Dockerfile you made earlier
+                // Ensure your Dockerfile uses 'FROM eclipse-temurin:21-jre-alpine'
+                // to match the Java 21 requirement!
                 sh 'docker build -t yourdockerhubuser/fraud-detection:latest .'
             }
-        }
-    }
-
-    post {
-        success {
-            echo "Successfully built Alberto's Fraud Detection System!"
         }
     }
 }
