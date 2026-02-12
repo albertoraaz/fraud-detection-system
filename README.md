@@ -26,6 +26,8 @@ The system utilizes a stateless stream-processing model to monitor incoming fina
 
 ### The Architecture Diagram
 
+Data Flow & CI/CD Lifecycle
+
 graph TD
 subgraph External_Sources
 T[Transaction Source] --> K_In((Kafka Topic: transactions-input))
@@ -49,8 +51,8 @@ end
         Logic -.-> KC[Keycloak / OAuth2]
     end
 
-
 ### The Distributed System Diagram (Physical View)
+Physical View (Docker Network)
 
 graph LR
 subgraph Docker_Network
