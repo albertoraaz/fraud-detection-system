@@ -1,9 +1,19 @@
 server:
-  port: 8080
+  port: 8081
 
 spring:
   application:
     name: fraud-detection-system
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # This tells your app where to verify the token signature
+          issuer-uri: http://localhost:8080/realms/fraud-detection
+          # This is the path to the public keys (JWKS)
+          jwk-set-uri: http://localhost:8080/realms/fraud-detection/protocol/openid-connect/certs
+          audiences: fraud-detection-client
 
   kafka:
     # 'localhost:9092' connects from your Ubuntu host to the Docker broker

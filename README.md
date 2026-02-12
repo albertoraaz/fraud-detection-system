@@ -22,7 +22,6 @@ A production-ready event-driven system built with **Spring Boot 3.5** and **Kafk
 
 The system utilizes a stateless stream-processing model to monitor incoming financial transactions and identify suspicious activity with sub-millisecond latency.
 
-
 ### Core Components
 
 * **Transaction Producer**: A RESTful gateway that simulates high-frequency financial events, producing them into the Kafka cluster using `KafkaTemplate`.
@@ -51,7 +50,6 @@ This project follows standard hardening (**OWASP**, **NIST**) to ensure data pro
 | **Security Scanning** | Automated Vulnerability Audits | **GitHub Actions, Snyk, Trivy** |
 | **Static Analysis** | SAST for Logic Flaws | **GitHub CodeQL** |
 | **API Protection** | Hardening & Rate Limiting | **Spring Security, Rate Limiter** |
-| **Authentication** | Identity Management (IdP) | **OAuth2, JWT, Keycloak (Local)** |
 | **Secret Management** | Zero-Leak Policy | GitHub Secrets, `.gitignore` |
 
 ### 1. Failure Isolation & Resiliency
@@ -59,7 +57,6 @@ This project follows standard hardening (**OWASP**, **NIST**) to ensure data pro
 * **Graceful Degradation**: Configured retries with exponential backoff for transient network issues, ensuring data delivery without overwhelming the infrastructure.
 
 ### 2. Zero-Trust Identity & Access Management
-* **Keycloak Implementation**: A local **Keycloak** instance acts as the Identity Provider (IdP). No request is trusted without a valid, signed **JWT** via the **OAuth2** protocol.
 * **Rate Limiting**: Protects the ingestion API from DDoS and brute-force attacks by limiting the number of requests per second per client, ensuring fair resource distribution.
 
 ### 3. Automated DevSecOps & Scanning
@@ -114,7 +111,7 @@ The system provides an interactive simulation interface via Swagger UI, allowing
 ### 2. Verifying the Logic
 To verify that the Fraud Detection engine is correctly filtering high-value events:
 * **Terminal Logs**: Monitor the application console. You will see `DEBUG` logs for every incoming transaction and `WARN` alerts for those flagged as suspicious (e.g., > $10,000).
-* **Kafka UI**: If configured, visit `http://localhost:8081` to view the raw JSON payloads in the `fraud-alerts` topic.
+* **Kafka UI**: If configured, visit `http://localhost:8080` to view the raw JSON payloads in the `fraud-alerts` topic.
 
 ### 3. Validating Exactly-Once Semantics (EOS)
 Because the system is configured with `exactly_once_v2`, the **Kafka Transaction Manager** ensures that no partial or duplicate fraud alerts are committed to the `fraud-alerts` topic, even during unexpected service restarts.
