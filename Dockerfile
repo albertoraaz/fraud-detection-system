@@ -1,12 +1,4 @@
-# Stage 1: Build (Upgraded to Java 21)
-FROM maven:3.9.6-eclipse-temurin-21-alpine AS build
-WORKDIR /app
-COPY pom.xml .
-RUN mvn dependency:go-offline
-COPY src ./src
-RUN mvn clean package -DskipTests
-
-# Stage 2: Runtime (Hardened & Upgraded to Java 21)
+# We only need the Runtime Stage because Jenkins already ran Maven
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
@@ -14,10 +6,10 @@ WORKDIR /app
 RUN addgroup -S spring && adduser -S spring -G spring
 USER spring:spring
 
-COPY --from=build /app/target/*.jar app.jar
+# Copy the JAR that was built by the Jenkins 'Build & Package' stage
+COPY target/*.jar app.jar
 
-# Matching your server port in application.yml
 EXPOSE 8081
 
-# Senior Tip: Add JVM tuning for container resource awareness
+# Optimized for Cloud/K8s environments
 ENTRYPOINT ["java", "-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=75.0", "-jar", "app.jar"]

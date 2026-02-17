@@ -27,8 +27,7 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                // Ensure your Dockerfile uses 'FROM eclipse-temurin:21-jre-alpine'
-                // to match the Java 21 requirement!
+                // This works because the previous stage created the /target folder
                 sh 'docker build -t yourdockerhubuser/fraud-detection:latest .'
             }
         }
