@@ -1,24 +1,25 @@
 spring:
   kafka:
+    # Use 'localhost:9092' as a dummy, Testcontainers will override this dynamically
+    bootstrap-servers: localhost:9092
+    admin:
+      auto-create: false
+      fail-fast: false
+    properties:
+      # These ensure Spring doesn't hang if Kafka takes a few seconds to boot in Docker
+      request.timeout.ms: 5000
+      metadata.max.age.ms: 3000
     producer:
       properties:
-        max.block.ms: 5000 # Give it 5 seconds for the first connection
+        max.block.ms: 5000
 
-logging:
-  level:
-    root: INFO
-    # This shows the "Event SUCCESS published" logs you shared
-    io.github.resilience4j: DEBUG
-    # This shows your "👀 Incoming Transaction" logs
-    com.raaz.fraud_detection_system.streams: INFO
-
+# Keep your existing Resilience4j logic but maybe tighten the window for faster tests
 resilience4j:
   circuitbreaker:
-    configs:
-      default:
-        # Lower thresholds for faster testing
+    instances:
+      kafkaProducer:
         registerHealthIndicator: true
         slidingWindowSize: 5
         minimumNumberOfCalls: 3
+        waitDurationInOpenState: 2s
         failureRateThreshold: 50
-        waitDurationInOpenState: 5s

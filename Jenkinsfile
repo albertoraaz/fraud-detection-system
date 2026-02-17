@@ -27,7 +27,7 @@ pipeline {
                 script {
                     def jdkPath = tool name: 'JAVA_21', type: 'jdk'
                     // This triggers the Testcontainers setup verified in your local environment
-                    sh "export JAVA_HOME=${jdkPath} && ${tool name: '3.9.6', type: 'maven'}/bin/mvn test"
+                   sh "export JAVA_HOME=${jdkPath} && mvn test -Dtestcontainers.timeout=120"
                 }
             }
         }
