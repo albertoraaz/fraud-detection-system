@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Testcontainers
 @ActiveProfiles("test")
 @Slf4j
-@TestPropertySource(properties = {"spring.kafka.admin.fail-fast=false", "spring.kafka.admin.auto-create=false"})
+@TestPropertySource(properties = {"spring.kafka.admin.fail-fast=false", "spring.kafka.admin.auto-create=false", "spring.kafka.streams.auto-startup=false"})
 public class KafkaProducerIntegrationTest {
 
     // 1. Set up a real Kafka container for the test
