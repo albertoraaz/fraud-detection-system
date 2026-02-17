@@ -40,37 +40,35 @@ pipeline {
 }
 
         stage('Deploy') {
-            steps {
-                script {
-                    try {
-                        echo "🧹 Pre-deployment cleanup: Clearing ports and stale containers..."
+    steps {
+        script {
+            try {
+                echo "🧹 Cleaning up infrastructure and ports..."
 
-                        // 1. Force down any existing containers from this project
-                        sh "docker-compose -f docker-compose.yml down -v --remove-orphans"
+                // 1. Standard docker-compose cleanup
+                sh "docker-compose -f docker-compose.yml down -v --remove-orphans"
 
-                        // 2. Senior safety check: Kill any process (Zombie containers or native services) holding the ports
-                        // 2181 = Zookeeper, 9092 = Kafka
-                        sh '''
-                            for port in 2181 9092; do
-                                if lsof -Pi :$port -sTCP:LISTEN -t >/dev/null ; then
-                                    echo "⚠️ Port $port is busy. Terminating process..."
-                                    fuser -k $port/tcp || true
-                                fi
-                            done
-                        '''
+                // 2. Force liberation of Kafka/Zookeeper ports (2181, 9092)
+                // This kills any process currently listening on those ports
+                sh '''
+                    for port in 2181 9092; do
+                        if lsof -Pi :$port -sTCP:LISTEN -t >/dev/null ; then
+                            echo "⚠️ Port $port is busy. Killing process..."
+                            fuser -k $port/tcp || true
+                        fi
+                    done
+                '''
 
-                        // 3. Deploy fresh
-                        sh "docker-compose -f docker-compose.yml up -d --build"
+                // 3. Fresh deployment
+                sh "docker-compose -f docker-compose.yml up -d --build"
 
-                        echo "🚀 Deployment Successful!"
-                    } catch (Exception e) {
-                        echo "❌ Deployment failed! Initiating Automated Rollback..."
-                        // Clean up the mess so the NEXT build doesn't fail with the same port error
-                        sh "docker-compose -f docker-compose.yml down -v"
-                        error("Stopping pipeline due to deployment failure: ${e.message}")
-                    }
-                }
+            } catch (Exception e) {
+                echo "❌ Deployment failed! Rollback initiated..."
+                sh "docker-compose -f docker-compose.yml down -v"
+                error("Build failed: ${e.message}")
             }
         }
+    }
+}
     }
 }
