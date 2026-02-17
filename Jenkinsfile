@@ -56,10 +56,14 @@ pipeline {
             steps {
                 script {
                     try {
-                        echo "Cleaning up infrastructure and ports..."
+                        echo "Step 1: Force cleaning any existing zombie containers..."
+                        // Prevents "Conflict. The container name /zookeeper is already in use"
+                        sh "docker rm -f zookeeper broker prometheus grafana || true"
+
+                        echo "Step 2: Cleaning up infrastructure and orphaned volumes..."
                         sh "docker compose -f docker-compose.yml down -v --remove-orphans"
 
-                        // Using single quotes for the shell block to avoid Groovy interpolation of $port
+                        echo "Step 3: Ensuring ports 2181 and 9092 are free..."
                         sh '''
                             for port in 2181 9092; do
                                 if lsof -Pi :$port -sTCP:LISTEN -t >/dev/null ; then
@@ -69,7 +73,9 @@ pipeline {
                             done
                         '''
 
+                        echo "Step 4: Deploying system..."
                         sh "docker compose -f docker-compose.yml up -d --build"
+
                     } catch (Exception e) {
                         echo "Deployment failed! Rollback initiated..."
                         sh "docker compose -f docker-compose.yml down -v"
@@ -82,10 +88,10 @@ pipeline {
 
     post {
         success {
-            echo "Fraud Detection System successfully deployed to Production."
+            echo "Fraud Detection System successfully deployed."
         }
         failure {
-            echo "Pipeline failed. Check logs for details."
+            echo "Pipeline failed. Check Jenkins logs and Docker container status."
         }
     }
 }
