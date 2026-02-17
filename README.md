@@ -49,6 +49,7 @@ graph TD
     end
    ```
 
+---
 ### 🌐 Distributed System Diagram: Physical & Infrastructure View
 This view focuses on the topology and the network isolation of the distributed components.
 
@@ -80,6 +81,26 @@ graph LR
     Jenk[Jenkins Master] -.->|SSH| App
 ```
 
+---
+## 🖼️ System Gallery
+
+### CI/CD Pipeline (Jenkins)
+![Jenkins Pipeline](docs/assets/jenkins_stages_view.png)
+*Automated workflow: Build, Unit Tests, Integration Tests (Testcontainers), and Docker Deployment.*
+
+### Monitoring Dashboard (Grafana)
+![Grafana Dashboard](docs/assets/grafana_dashboard.png)
+*Shows the system's performance and memory health.*
+
+### Monitoring Prometheus (Prometheus)
+![Prometheus Dashboard](docs/assets/prometheus_view.png)
+*Proves the scraping connection is correctly configured.*
+
+### API Verification (Swagger)
+![Swagger Dashboard](docs/assets/swagger_endpoint.png)
+*Shows how other developers can interact with your API.*
+
+---
 ### Core Components
 
 * **Transaction Producer**: A RESTful gateway that simulates high-frequency financial events, producing them into the Kafka cluster using `KafkaTemplate`.
@@ -227,7 +248,7 @@ github-app-creds: GitHub App Private Key for secure repository access.
 
 dockerhub-credentials: Username/Password for image distribution.
 
-
+---
 ### Manual Transaction Initialization
 
 ```bash
