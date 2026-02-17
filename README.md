@@ -185,9 +185,6 @@ The system is instrumented for instant verification through the following endpoi
 | **OpenAPI Docs** | [http://localhost:8081/v3/api-docs](http://localhost:8081/v3/api-docs)         | Raw JSON Documentation |
 | **Kafka Broker** | `localhost:9092`                                                               | External Bootstrap Server |
 
-Monitoring: Spring Boot Actuator
-This project implements **Spring Boot Actuator** to provide deep visibility into the system's operational health and the state of our resiliency patterns.
-
 **Key Features:**
 * **Health Endpoint:** Exposed at `/actuator/health` to provide real-time status of the application, disk space, and Kafka connectivity.
 * **Circuit Breaker Metrics:** The health check specifically includes the `circuitBreakers` component, showing whether the state is `CLOSED`, `OPEN`, or `HALF_OPEN`.
@@ -225,14 +222,7 @@ A pre-configured dashboard turns raw metrics into actionable insights.
 
 ## 🛠️ Configuration & Setup
 
-This project follows best practices by using a template-based configuration system. This ensures that local environment settings and potential secrets remain outside of version control.
-
-### Local Environment Setup
-To get the application running on your local machine, follow these steps:
-
-1. **Create your local configuration file** Copy the example template to create your actual `application.yml` file:
-   ```bash
-   cp src/main/resources/application.yml.example src/main/resources/application.yml
+This project follows best practices, this ensures that local environment settings and potential secrets remain outside of version control.
 
 ### ⚙️ Jenkins Environment Setup
 
