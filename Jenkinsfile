@@ -59,6 +59,7 @@ pipeline {
                         echo "Cleaning up infrastructure and ports..."
                         sh "docker-compose -f docker-compose.yml down -v --remove-orphans"
 
+                        // Using single quotes for the shell block to avoid Groovy interpolation of $port
                         sh '''
                             for port in 2181 9092; do
                                 if lsof -Pi :$port -sTCP:LISTEN -t >/dev/null ; then
@@ -85,3 +86,6 @@ pipeline {
         }
         failure {
             echo "Pipeline failed. Check logs for details."
+        }
+    }
+}
