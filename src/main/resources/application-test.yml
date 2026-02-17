@@ -5,10 +5,13 @@ spring:
     admin:
       auto-create: false
       fail-fast: false
+    streams:
+      # Prevents the Stream thread from trying to connect to localhost during boot
+      auto-startup: false
     properties:
       # These ensure Spring doesn't hang if Kafka takes a few seconds to boot in Docker
-      request.timeout.ms: 5000
-      metadata.max.age.ms: 3000
+      request.timeout.ms: 2000
+      default.api.timeout.ms: 2000
     producer:
       properties:
         max.block.ms: 5000
