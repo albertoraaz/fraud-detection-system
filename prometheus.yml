@@ -1,8 +1,7 @@
 global:
-  scrape_interval: 5s # How often to check for new data
-
+  scrape_interval: 2s
 scrape_configs:
-  - job_name: 'fraud-detection-system'
+  - job_name: 'fraud-system'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['host.docker.internal:8081'] # Assumes app runs on port 8081
+      - targets: ['172.17.0.1:8081']

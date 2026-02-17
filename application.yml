@@ -53,13 +53,16 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, info, circuitbreakers # Opens the doors to these paths
+        include: health, info, metrics, prometheus, circuitbreakers
   endpoint:
     health:
       show-details: always # Vital to see the 'CLOSED/OPEN' status
+    prometheus:
+      enabled: true
   health:
     circuitbreakers:
       enabled: true # Specifically links Resilience4j to Actuator
+    show-details: always
 
 resilience4j:
   circuitbreaker:

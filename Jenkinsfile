@@ -57,7 +57,7 @@ pipeline {
                 script {
                     try {
                         echo "Cleaning up infrastructure and ports..."
-                        sh "docker-compose -f docker-compose.yml down -v --remove-orphans"
+                        sh "docker compose -f docker-compose.yml down -v --remove-orphans"
 
                         // Using single quotes for the shell block to avoid Groovy interpolation of $port
                         sh '''
@@ -69,10 +69,10 @@ pipeline {
                             done
                         '''
 
-                        sh "docker-compose -f docker-compose.yml up -d --build"
+                        sh "docker compose -f docker-compose.yml up -d --build"
                     } catch (Exception e) {
                         echo "Deployment failed! Rollback initiated..."
-                        sh "docker-compose -f docker-compose.yml down -v"
+                        sh "docker compose -f docker-compose.yml down -v"
                         error("Build failed: ${e.message}")
                     }
                 }
