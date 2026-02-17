@@ -98,7 +98,7 @@ graph LR
 
 ### API Verification (Swagger)
 ![Swagger Dashboard](docs/assets/swagger_endpoint.png)
-*Shows how other developers can interact with your API.*
+*Shows how to interact with the API.*
 
 ---
 ### Core Components
