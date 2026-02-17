@@ -180,7 +180,7 @@ This project implements **Spring Boot Actuator** to provide deep visibility into
 ---
 ## 📊 Observability
 
-The project is fully instrumented for production-grade monitoring, providing deep visibility into the system's "Golden Signals."
+The project is fully instrumented for production-grade monitoring, providing deep visibility into the system.
 
 ### Prometheus
 Prometheus acts as the collector, scraping the application's `/actuator/prometheus` endpoint every 2 seconds.
