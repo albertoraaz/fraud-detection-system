@@ -9,17 +9,15 @@ A production-ready event-driven system built with **Spring Boot 3.5** and **Kafk
 
 ## 🚀 Key Features
 
-- **Real-time Ingestion:** REST API for high-throughput transaction simulation.
-- **Distributed Streaming:** Leverages Kafka for asynchronous message processing.
-- **Fault Tolerance:** Implements Circuit Breaker and Retry patterns.
-- **Automated CI/CD:** Fully orchestrated lifecycle managed by Jenkins and GitHub Apps.
+- **Real-time Ingestion:** Leveraging Kafka Streams for low-latency analysis.
+- **Resilience:** Integrated Resilience4j for circuit breaking and rate limiting.
+- **CI/CD Ready:** Automated pipeline with Jenkins and Docker Compose.
 - **Containerization:** Multi-stage Docker builds for minimal, hardened production images.
 - **Automated Rollback:** Smart deployment logic that reverts to the last stable version if a build or health check fails.
-- **Observability:** Health monitoring and metrics exposure via Spring Boot Actuator.
+- **Observability:** Full monitoring stack with Prometheus and Grafana.
 - **API Documentation:** Interactive documentation via Swagger/OpenAPI.
 
 ---
-
 ### 🏛️ The Architecture Diagram: Full Lifecycle & Data Flow
 This diagram demonstrates the end-to-end "Commit-to-Cloud" flow, including the internal state management of the Kafka Streams processor.
 
@@ -89,7 +87,6 @@ graph LR
 * **Infrastructure Layer**: A containerized environment featuring **Confluent Kafka (7.1.0)** and **Zookeeper**, optimized for single-node development with transactional support.
 
 ---
-
 ## 🏗️ CI/CD Pipeline & DevOps Lifecycle
 This project utilizes a "Commit-to-Cloud" workflow. Every push to the repository triggers an automated pipeline:
 
@@ -101,7 +98,21 @@ This project utilizes a "Commit-to-Cloud" workflow. Every push to the repository
 * **Rollback Strategy:** The pipeline includes a failure-handling block. If the deployment or integration tests fail, the system automatically triggers a rollback to the previous stable Docker image tag, ensuring zero-downtime and system reliability.
 
 ---
+## 🧪 Testing
 
+The system implements a comprehensive testing strategy to ensure reliability under both normal and high-pressure conditions.
+
+### Unit Tests
+Validated using **Mockito**, these tests focus on isolated business logic.
+* **Happy Path:** Validates that legitimate transactions are correctly identified and processed without triggering alerts.
+* **Failure Cases:** Verifies that the system correctly identifies fraudulent patterns (e.g., negative amounts) and handles malformed JSON payloads.
+
+### Integration Tests
+Utilizing **Testcontainers**, these tests spin up an ephemeral Kafka broker to validate the full stream topology.
+* **Happy Path:** End-to-end flow from the `transactions` input topic, through the Streams logic, to the `fraud-alerts` output topic.
+* **Failure Cases:** Simulates infrastructure issues such as broker timeouts (`TimeoutException`) and verifies that the **Resilience4j Circuit Breaker** trips correctly to protect the application.
+
+---
 ## 🛡️ Reliability & Advanced Features
 
 This engine is engineered for banking-grade consistency and observability:
@@ -143,7 +154,7 @@ Every push and Pull Request triggers a CI/CD pipeline via **GitHub Actions** tha
 * **Secrets Management**: Credentials and Client Secrets are managed via environment variables and **GitHub Secrets**. A template-based configuration (`application.yml.example`) is used to ensure no sensitive data is ever committed to version control.
 
 ---
-## 📊 Monitoring, API Verification & Observability
+## 📊 Monitoring, API Verification
 
 The system is instrumented for instant verification through the following endpoints:
 
@@ -167,28 +178,22 @@ This project implements **Spring Boot Actuator** to provide deep visibility into
 3. Check `http://localhost:8081/actuator/health` to see the state transition to `CIRCUIT_OPEN`.
 
 ---
+## 📊 Observability
 
-## 🧪 Manual Testing & Simulation
+The project is fully instrumented for production-grade monitoring, providing deep visibility into the system's "Golden Signals."
 
-The system provides an interactive simulation interface via Swagger UI, allowing you to validate the end-to-end data pipeline without writing external scripts.
+### Prometheus
+Prometheus acts as the collector, scraping the application's `/actuator/prometheus` endpoint every 2 seconds.
+* **Vitals:** Tracks JVM memory (Heap/Non-Heap), CPU load, and active thread counts.
+* **Kafka Metrics:** Monitors `kafka_stream_thread_state`, record throughput, and `kafka_consumer_group_lag`.
 
-
-### 1. Triggering Transactions
-1. Access the **Swagger UI** at `http://localhost:8081/swagger-ui.html`.
-2. Locate the `Transactions` section and the `POST /api/transactions` endpoint.
-3. Click **"Try it out"** and then **"Execute"**.
-4. The system will automatically generate **50 simulated transactions** with randomized IDs and amounts.
-
-### 2. Verifying the Logic
-To verify that the Fraud Detection engine is correctly filtering high-value events:
-* **Terminal Logs**: Monitor the application console. You will see `DEBUG` logs for every incoming transaction and `WARN` alerts for those flagged as suspicious (e.g., > $10,000).
-* **Kafka UI**: If configured, visit `http://localhost:8081` to view the raw JSON payloads in the `fraud-alerts` topic.
-
-### 3. Validating Exactly-Once Semantics (EOS)
-Because the system is configured with `exactly_once_v2`, the **Kafka Transaction Manager** ensures that no partial or duplicate fraud alerts are committed to the `fraud-alerts` topic, even during unexpected service restarts.
+### Grafana
+A pre-configured dashboard turns raw metrics into actionable insights.
+* **Real-time Monitoring:** Visualization of transaction rates, processing latency, and error counts.
+* **Resilience Dashboard:** Tracks the state of Circuit Breakers (Closed/Open/Half-Open) in real-time.
+* **Access:** Access the dashboard at `http://localhost:3000` (Default: `admin/admin`).
 
 ---
-
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -222,6 +227,18 @@ github-app-creds: GitHub App Private Key for secure repository access.
 
 dockerhub-credentials: Username/Password for image distribution.
 
+
+### Manual Transaction Initialization
+
+```bash
+docker exec broker kafka-topics --create --bootstrap-server localhost:9092 \
+--topic __transaction_state \
+--replication-factor 1 \
+--partitions 1 \
+--config min.insync.replicas=1 \
+--config cleanup.policy=compact
+```
+
 ### The Execution Workflow
 
 To launch the detection system on your local machine:
@@ -238,7 +255,6 @@ To launch the detection system on your local machine:
     ```bash
     mvn spring-boot:run
     ```
-
 
 
 ## 👤 Author
