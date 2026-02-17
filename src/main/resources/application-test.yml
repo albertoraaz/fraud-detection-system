@@ -1,0 +1,24 @@
+spring:
+  kafka:
+    producer:
+      properties:
+        max.block.ms: 5000 # Give it 5 seconds for the first connection
+
+logging:
+  level:
+    root: INFO
+    # This shows the "Event SUCCESS published" logs you shared
+    io.github.resilience4j: DEBUG
+    # This shows your "👀 Incoming Transaction" logs
+    com.raaz.fraud_detection_system.streams: INFO
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        # Lower thresholds for faster testing
+        registerHealthIndicator: true
+        slidingWindowSize: 5
+        minimumNumberOfCalls: 3
+        failureRateThreshold: 50
+        waitDurationInOpenState: 5s

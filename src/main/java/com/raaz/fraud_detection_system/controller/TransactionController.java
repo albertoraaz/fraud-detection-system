@@ -50,15 +50,4 @@ public class TransactionController {
         return String.format("Results - Success: %d, Failures: %d", successCount, failureCount);
     }
 
-    /**
-     *
-     * @param e
-     * @return
-     */
-    public String fallbackKafka(Exception e) {
-
-        log.error("Unable to send message", e);
-        return "Service temporarily unavailable. Please try again later.";
-
-    }
 }
